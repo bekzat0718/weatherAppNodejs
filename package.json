@@ -1,0 +1,18 @@
+{
+  "name": "h2weatherapp",
+  "version": "1.0.0",
+  "description": "This is the WeatherApp for real time weather forcast for any city of the world",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Beka",
+  "license": "ISC",
+  "repository": {"bekzat0718":"weatherAppNodejs"},
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "request": "^2.88.2"
+  }
+}
