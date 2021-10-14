@@ -1,6 +1,7 @@
 const express = require('express')
 const https = require('https')
 const bodyParser = require('body-parser');
+
 const app = express()
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(express.static('public'))
@@ -27,6 +28,7 @@ app.post('/results', (req, res) => {
     https.get(url, response => {
         response.on('data', data => {
             const weatherData = JSON.parse(data)
+            if (!weatherData) console.log('weather data is not obtained, check your connection')
             const imageURL= "http://openweathermap.org/img/wn/"+ weatherData.weather[0].icon +"@2x.png"
             const learnMoreUrl = `https://openweathermap.org/city/${ weatherData.id }?utm_source=openweathermap&utm_medium=widget&utm_campaign=html_old`
             // Get unit value
@@ -39,14 +41,14 @@ app.post('/results', (req, res) => {
             // Send Html Page as text/string
             res.set('Content-Type', 'text/html')
             const responseHtmlContent = `
-            <!doctype html>
+            <!DOCTYPE html>
             <html lang="en" class="h-100">
             
             <head>
               <meta charset="utf-8">
               <meta name="viewport" content="width=device-width, initial-scale=1">
               <title> WeatherApp | Results </title>
-              <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+              <link rel="shortcut icon" href="${imageURL}" type="image/x-icon">
               <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
                 integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
               <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
@@ -71,42 +73,40 @@ app.post('/results', (req, res) => {
             </head>
             
             <body class="d-flex h-100 text-center text-white bg-dark">
-            
               <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
                 <header class="mb-auto">
                   <div>
                     <h3 class="float-md-start mb-0">WeatherApp | Results</h3>
-                    <nav class="nav nav-masthead justify-content-center float-md-end">
+                    <nav class="nav nav-masthead justify-content-center float-md-end ">
                       <a class="nav-link " href="/settings">Settings</a>
                       <a class="nav-link active" aria-current="page" href="/results">Results</a>
                       <a class="nav-link" href="/contact">Contact</a>
                     </nav>
                   </div>
                 </header>
-                <main class="px-3">
-                  <h1 class="city"> Weather for ${ params.city }</h1>
+
+                <main class="px-3 m-3">
+                  <h1 class="city"> Weather for <span style="color: orange;"> ${ params.city }</span></h1>
                   <center>
                     <img class="icon" src="${ imageURL }" alt="">
                   </center>
-                  <b>Temperature:</b> <p class="temperature">${ weatherData.main.temp } ${ currUnit } </p>
-                  <b>Description:</b> <p class="description">${ weatherData.weather[0].description }</p>
+                  <hr>
+                  <b>TEMPERATURE:</b> <p style="font-size: 22px" class="temperature">${ weatherData.main.temp }° ${ currUnit } </p>
+                  <hr>
+                  <b>DESCRIPTION:</b> <p style="font-size: 22px" class="description">${ weatherData.weather[0].description }</p>
+                  <hr>
                   <p class="lead p-3">
-                    <a href="${ learnMoreUrl }" class="btn btn-lg btn-secondary fw-bold border-white bg-white">Details</a>
-                    <a href="/settings" class="btn btn-lg btn-dark fw-bold border-white ">Find More Results</a>
+                    <a href="${ learnMoreUrl }" class="btn mt-2  btn-lg btn-secondary fw-bold border-white bg-white">Details</a>
+                    <a href="/settings" class="btn btn-lg mt-2 btn-dark fw-bold border-white ">Find More Results</a>
                   </p>
-                </main>
                 </main>
             
                 <footer class="mt-auto text-white-50">
-                <p>Cover template for <a href="https://getbootstrap.com/" class="text-white-50">Bootstrap</a>, by <a href="https://twitter.com/mdo" class="text-white-50">@mdo</a>.</p>
-              </footer>
-            
+                  <p>Cover template for <a href="https://getbootstrap.com/" class="text-white-50">Bootstrap</a>, by <a href="https://twitter.com/mdo" class="text-white-50">@mdo</a>.</p>
+                </footer>
               </div>
             
-            
-            
             </body>
-            
             </html>`
             // huge html page here
             res.send(responseHtmlContent)
@@ -116,5 +116,5 @@ app.post('/results', (req, res) => {
 })
 
 app.listen(3000, (req, res) => {
-    console.log('OK')
+    console.log('Server is running at http://localhost:3000')
 })
